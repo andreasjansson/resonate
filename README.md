@@ -25,6 +25,6 @@ somewhere along the way, but unfortunately far from linear:
 
     y = resonated_signal * math.pow((nfreqs - i) / float(nfreqs), 1.4)
 
-Here is a RMS plot of the first 30 seconds of Bach's Suite BWV 1006a:
+Here is an RMS plot of the first 30 seconds of a synthesised version of Bach's Suite BWV 1006a:
 
 ![Example RMS plot](https://github.com/andreasjansson/resonate/raw/master/example_rms_plot.png)
