@@ -22,8 +22,8 @@ Here's one way of generating a list of frequencies corresponding to C3 - B4:
 Normalisation
 -------------
 
-Lower frequencies tend to resonate stronger than high frequencies, so you'll probably want to normalise it by
-multiplying the inputs with some function. I have yet to find a function that fits. The following function gets
+Lower frequencies tend to resonate stronger than high frequencies, so you'll probably want to normalise the output signals by
+multiplying them with some function based on their index. I have yet to find a function that fits. The following function gets
 somewhere along the way, but unfortunately far from linear:
 
     y = resonated_signal * math.pow((nfreqs - i) / float(nfreqs), 1.4)
