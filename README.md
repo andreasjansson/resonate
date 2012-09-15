@@ -6,7 +6,10 @@ Example usage:
     from resonate import resonate
     resonated_signals, rms, max_rms = resonate(audio, sample_rate, freqs, damping, springiness, rms_window_width)
 
+`audio` and `freq` can be standard Python lists, or NumPy arrays.
+`audio` needs to be a single (mono) signal.
 `damping` should probably be somewhere around _8000.0_, `springiness` probably around _20.0_.
+`rms_window_width` is specified in number of samples.
 
 Here's one way of generating a list of frequencies corresponding to C3 - B4:
 
