@@ -1,3 +1,22 @@
+/* 
+ * Signal resonator Python module
+ * Copyright (C) 2012   <andreas@jansson.me.uk>
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at
+ * your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * 
+ */
+
 #include <Python.h>
 #include <math.h>
 #include <stdio.h>
@@ -94,6 +113,8 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
     rms[i] = PyList_New(siglen / rms_window);
   }
 
+  // algorithm loosely based on https://instruct1.cit.cornell.edu/courses/bionb441/FinalProjects/f2006/knr9/Final%20Project/KevinRohmannBioNB441FinalProject.htm
+
   max_rms = 0;
   dt = 1.0 / (double)sr;
   for(t = 0; t < siglen; t ++) {
@@ -136,7 +157,7 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
 static PyMethodDef functions[] = {
     {"resonate", (PyCFunction)resonate, METH_VARARGS | METH_KEYWORDS,
      "Resonate a signal."},
-    {NULL, NULL, 0, NULL}   /* sentinel */
+    {NULL, NULL, 0, NULL}
 };
 
 PyMODINIT_FUNC initresonate(void)
