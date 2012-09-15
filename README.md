@@ -32,7 +32,7 @@ Here is an RMS plot of the first 30 seconds of a synthesised version of Bach's S
 Installation
 ------------
 
-To install the package, run
+To install the module, run
 
     sudo python setup.py install
     
