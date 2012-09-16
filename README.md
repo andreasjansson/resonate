@@ -1,6 +1,11 @@
 Resonate
 ========
 
+A Python module that drives an array of resonators with an input signal and
+returns the resulting displacements, their RMS amplitude over an arbitrary window,
+and the peak RMS amplitude for all displacement lists. I made it as an experimental
+pitch detection technique.
+
 Example usage:
 
     from resonate import resonate
