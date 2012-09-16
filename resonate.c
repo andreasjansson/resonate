@@ -27,12 +27,12 @@
 
 static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
 {
-  static char *kwlist[] = {"signal", "sr", "freqs", "springiness", "damping", "rms_window", NULL};
+  static char *kwlist[] = {"signal", "sr", "freqs", "spring_constant", "damping", "rms_window", NULL};
 
   PyObject *pysignal;
   int sr;
   PyObject *pyfreqs;
-  double springiness;
+  double spring_constant;
   double damping;
   int rms_window;
   PyObject *item;
@@ -56,7 +56,7 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
   double rms_val;
 
   if(!PyArg_ParseTupleAndKeywords(args, keywds, "OiOddi", kwlist,
-                                  &pysignal, &sr, &pyfreqs, &springiness, &damping, &rms_window)) {
+                                  &pysignal, &sr, &pyfreqs, &spring_constant, &damping, &rms_window)) {
     return NULL;
   }
 
@@ -69,7 +69,7 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
   freqs = alloca(nfreqs * sizeof(double));
 
   twopisquared = pow(2.0 * M_PI, 2.0);
-  springiness = springiness * twopisquared;
+  spring_constant = spring_constant * twopisquared;
   masses = alloca(nfreqs * sizeof(double));
 
   resons = alloca(nfreqs * sizeof(PyObject *));
@@ -99,11 +99,11 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
     freqs[i] = PyFloat_AsDouble(item);
     Py_DECREF(item);
 
-    masses[i] = springiness / (pow(freqs[i], 2.0) * twopisquared);
+    masses[i] = spring_constant / (pow(freqs[i], 2.0) * twopisquared);
 
     resons[i] = PyList_New(siglen);
 
-    sm[i] = -(springiness / masses[i]);
+    sm[i] = -(spring_constant / masses[i]);
     dm[i] = (damping / masses[i]);
 
     pos[i] = 0;
