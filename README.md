@@ -23,7 +23,7 @@ Here's one way of generating a list of frequencies corresponding to C3 - B4:
     freqs = c3 * np.power(2, np.arange(nfreqs) / 12.0)
     freqs = freqs.tolist()
     
-Here is an RMS plot of the first 30 seconds of a synthesised version of Bach's Suite BWV 1006a:
+Here is an RMS plot of a 30 seconds, 2 octave extract of a synthesised version of Bach's Suite BWV 1006a:
 
 ![Example RMS plot](https://github.com/andreasjansson/resonate/raw/master/example_rms_plot.png)
 

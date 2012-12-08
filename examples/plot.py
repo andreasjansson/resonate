@@ -4,20 +4,21 @@ import numpy as np
 import matplotlib.pyplot as plt
 from resonate import resonate
 
-c3 = 130.8128
-npitches = 28
-freqs = c3 * np.power(2, np.arange(npitches) / 12.0)
+def plot_resonators():
 
-sr, audio = wavfile.read('test.wav')
-audio = audio / float(max(audio))
+    c3 = 130.8128
+    npitches = 28
+    freqs = c3 * np.power(2, np.arange(npitches) / 12.0)
 
-print 'starting resonating'
-resons, rms, max_rms = resonate(audio, sr, freqs, 10000.0, 20.0, 2000)
-print 'done resonating'
+    sr, audio = wavfile.read('test.wav')
+    audio = audio / float(max(audio))
 
-note_names = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']
+    print 'starting resonating'
+    resons, rms, max_rms = resonate(audio, sr, freqs, 10000.0, 20.0, 2000)
+    print 'done resonating'
 
-def plot_resonators(rms, max_rms):
+    note_names = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']
+    
     fig = plt.figure()
     fig.subplots_adjust(hspace=0)
     for i, resonator in enumerate(reversed(rms)):
@@ -36,5 +37,5 @@ def plot_resonators(rms, max_rms):
     plt.show()
 
 if __name__ == '__main__':
-    plot_resonators(rms, max_rms)
+    plot_resonators()
 
