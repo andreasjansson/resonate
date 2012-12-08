@@ -47,6 +47,8 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
   double dt;
   double sample;
   double *pos, *prev_pos, *vel, *prev_vel;
+  double normpos;
+  double *norm;
   double *sm, *dm;
   int i, t;
   double max_rms;
@@ -85,6 +87,7 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
   prev_pos = alloca(nfreqs * sizeof(double));
   vel = alloca(nfreqs * sizeof(double));
   prev_vel = alloca(nfreqs * sizeof(double));
+  norm = alloca(nfreqs * sizeof(double));
 
   rms_moving = alloca(nfreqs * sizeof(double));
   rms = alloca(nfreqs * sizeof(double));
@@ -108,6 +111,7 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
 
     pos[i] = 0;
     vel[i] = 0;
+    norm[i] = pow(freqs[i], 3);
 
     rms_moving[i] = 0;
     rms[i] = PyList_New(siglen / rms_window);
@@ -123,12 +127,13 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
     for(i = 0; i < nfreqs; i ++) {
       prev_pos[i] = pos[i];
       prev_vel[i] = vel[i];
-      pos[i] = prev_pos[i] + dt * prev_vel[i];
+      pos[i] = (prev_pos[i] + dt * prev_vel[i]);;
+      normpos = pos[i] * norm[i];
       vel[i] = sample + prev_vel[i] + dt * (sm[i] * prev_pos[i] - dm[i] * prev_vel[i]);
-      item = PyFloat_FromDouble(pos[i]);
+      item = PyFloat_FromDouble(normpos);
       PyList_SET_ITEM(resons[i], t, item);
 
-      rms_moving[i] += fabs(pos[i]);
+      rms_moving[i] += fabs(normpos);
     }
 
     if((t + 1) % rms_window == 0) {
