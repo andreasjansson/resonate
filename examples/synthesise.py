@@ -14,11 +14,13 @@ def oscil(fq, sr, wave_table, winlen, phase):
     phase_incr = fq / sr
     samples = np.array([0] * winlen)
     for i in range(0, winlen):
-        phase += phase_incr
-        low = math.floor(len(wave_table) * phase)
-        high = math.ceil(len(wave_table) * phase)
+        low_index = int(len(wave_table) * phase)
+        low = wave_table[low_index]
+        high_index = low_index % len(wave_table)
+        high = wave_table[high_index]
         mid = (phase % 1) * (high - low) + low
         samples[i] = mid
+        phase += phase_incr
         if phase >= 1:
             phase -= 1
     return samples, phase
@@ -33,12 +35,10 @@ def synthesise(wav_filename, wave_table = square_wave(), sr = 22050, winlen = 10
     freqs = a0 * np.power(2, np.arange(0, nfreqs) / 12.0)
 
     print 'Resonating'
-    _, rms, max_rms = resonate(audio, sr, freqs, 10000.0, 20.0, winlen)
-    _ = None # free memory
-    gc.collect()
+    rms, max_rms = resonate(audio, sr, freqs, 10000.0, 20.0, winlen, False)
     print 'Done resonating'
 
-    threshold = max_rms / 2.3
+    threshold = max_rms / 2.2
     out = np.array([0] * (len(rms[0]) * winlen))
 
     print 'Synthesising'
@@ -52,7 +52,7 @@ def synthesise(wav_filename, wave_table = square_wave(), sr = 22050, winlen = 10
                 phase = 0
 
     print 'Normalising'
-    out = np.array((2 ** 15) * (out / float(max(out))), dtype = np.int16)
+    out = np.array((2 ** 15 - 1) * (out / float(max(out))), dtype = np.int16)
     return out
 
 if __name__ == '__main__':

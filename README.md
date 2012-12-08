@@ -15,14 +15,12 @@ Example usage:
 `damping` should probably be somewhere around _8000.0_, `spring_constant` probably around _20.0_.
 `rms_window_width` is specified in number of samples.
 
-Here's one way of generating a list of frequencies corresponding to C3 - B4:
+If you don't need resonated_signals, pass False as a final argument:
 
-    import numpy as np
-    c3 = 130.8128
-    nfreqs = 12 * 2
-    freqs = c3 * np.power(2, np.arange(nfreqs) / 12.0)
-    freqs = freqs.tolist()
-    
+    rms, max_rms = resonate(audio, sample_rate, freqs, damping, spring_constant, rms_window_width, False)
+
+Doing this will save lots of memory.
+
 Here is an RMS plot of a 30 seconds, 2 octave extract of a synthesised version of Bach's Suite BWV 1006a:
 
 ![Example RMS plot](https://github.com/andreasjansson/resonate/raw/master/example_rms_plot.png)
