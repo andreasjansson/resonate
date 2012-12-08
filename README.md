@@ -23,15 +23,6 @@ Here's one way of generating a list of frequencies corresponding to C3 - B4:
     freqs = c3 * np.power(2, np.arange(nfreqs) / 12.0)
     freqs = freqs.tolist()
     
-Normalisation
--------------
-
-Lower frequencies tend to resonate stronger than high frequencies, so you'll probably want to normalise the output signals by
-multiplying them with some function based on their index. I have yet to find a function that fits. The following function gets
-somewhere along the way, but unfortunately far from linear:
-
-    y = resonated_signal * math.pow((nfreqs - i) / float(nfreqs), 1.4)
-
 Here is an RMS plot of the first 30 seconds of a synthesised version of Bach's Suite BWV 1006a:
 
 ![Example RMS plot](https://github.com/andreasjansson/resonate/raw/master/example_rms_plot.png)
