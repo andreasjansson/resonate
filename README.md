@@ -15,9 +15,9 @@ Example usage:
 `damping` should probably be somewhere around _8000.0_, `spring_constant` probably around _20.0_.
 `rms_window_width` is specified in number of samples.
 
-If you want the resonated_signals back, pass True as a final argument:
+If you want the displacements back, pass True as a final argument:
 
-    resonated_signals, rms, max_rms = resonate(audio, sample_rate, freqs, damping, spring_constant, rms_window_width, True)
+    displacements, rms, max_rms = resonate(audio, sample_rate, freqs, damping, spring_constant, rms_window_width, True)
 
 Doing this will take lots of memory.
 
