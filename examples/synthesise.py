@@ -2,6 +2,7 @@ import numpy as np
 from resonate import resonate
 import scipy.io.wavfile as wavfile
 import math
+import sys
 import gc
 
 def square_wave():
@@ -12,7 +13,7 @@ def sawtooth_wave():
 
 def oscil(fq, sr, wave_table, winlen, phase):
     phase_incr = fq / sr
-    samples = np.array([0] * winlen)
+    samples = np.array([0] * winlen, dtype = np.float)
     for i in range(0, winlen):
         low_index = int(len(wave_table) * phase)
         low = wave_table[low_index]
@@ -25,34 +26,37 @@ def oscil(fq, sr, wave_table, winlen, phase):
             phase -= 1
     return samples, phase
 
-def synthesise(wav_filename, wave_table = square_wave(), sr = 22050, winlen = 1000):
+def synthesise(wav_filename, wave_table = sawtooth_wave(), sr = 22050, winlen = 1000):
     print 'Reading wav file'
     sr, audio = wavfile.read(wav_filename)
-    audio = audio / float(max(audio))
+    audio = list(audio / float(max(audio)))
     
     a0 = 27.5
     nfreqs = 12 * 5
     freqs = a0 * np.power(2, np.arange(0, nfreqs) / 12.0)
 
     print 'Resonating'
-    rms, max_rms = resonate(audio, sr, freqs, 10000.0, 20.0, winlen, False)
-    print 'Done resonating'
+    rms, max_rms = resonate(audio, sr, freqs, 10000.0, 19.0, winlen, False)
+    audio = None
+    gc.collect()
 
-    threshold = max_rms / 2.2
+    threshold = max_rms / 2.4
     out = np.array([0] * (len(rms[0]) * winlen))
 
-    print 'Synthesising'
     for i, fq in enumerate(freqs):
+        sys.stdout.write('\rSynthesising %3d%%' % (100 * i / float(len(freqs))))
+        sys.stdout.flush()
         phase = 0
         for t, x in enumerate(rms[i]):
             if x > threshold:
                 samples, phase = oscil(fq, sr, wave_table, winlen, phase)
+                samples *= x
                 out[t * winlen : (t + 1) * winlen] += samples
             else:
                 phase = 0
 
-    print 'Normalising'
-    out = np.array((2 ** 15 - 1) * (out / float(max(out))), dtype = np.int16)
+    print '\nNormalising'
+    out = np.array((2 ** 15 - 1) * (out / float(max(np.abs(out)))), dtype = np.int16)
     return out
 
 if __name__ == '__main__':

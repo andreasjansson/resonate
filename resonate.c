@@ -129,16 +129,18 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
   for(t = 0; t < siglen; t ++) {
     item = PySequence_Fast_GET_ITEM(signal, t);
     sample = PyFloat_AsDouble(item);
+    
     for(i = 0; i < nfreqs; i ++) {
       prev_pos[i] = pos[i];
       prev_vel[i] = vel[i];
       pos[i] = (prev_pos[i] + dt * prev_vel[i]);;
       normpos = pos[i] * norm[i];
       vel[i] = sample + prev_vel[i] + dt * (sm[i] * prev_pos[i] - dm[i] * prev_vel[i]);
-      item = PyFloat_FromDouble(normpos);
 
-      if(return_resons)
+      if(return_resons) {
+        item = PyFloat_FromDouble(normpos);
         PyList_SET_ITEM(resons[i], t, item);
+      }
 
       rms_moving[i] += fabs(normpos);
     }
