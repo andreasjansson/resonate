@@ -10,12 +10,12 @@ def plot_resonators():
     npitches = 22
     freqs = c2 * np.power(2, np.arange(npitches) / 12.0)
 
-    sr, audio = wavfile.read('bwv1080_5_midi.wav')
+    sr, audio = wavfile.read('test.wav')
     audio = audio / float(max(audio))
     audio = audio[0 : 30 * 22050]
 
     print 'starting resonating'
-    rms, max_rms = resonate(audio, sr, freqs, .002, 1000, False)
+    rms, max_rms = resonate(audio, sr, freqs, .0019, 1000, False)
     print 'done resonating'
 
     note_names = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']

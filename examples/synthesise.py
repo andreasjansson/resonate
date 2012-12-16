@@ -36,7 +36,7 @@ def synthesise(wav_filename, wave_table = sawtooth_wave(), sr = 22050, winlen = 
     freqs = a0 * np.power(2, np.arange(0, nfreqs) / 12.0)
 
     print 'Resonating'
-    rms, max_rms = resonate(audio, sr, freqs, 10000.0, 19.0, winlen, False)
+    rms, max_rms = resonate(audio, sr, freqs, 0.0019, winlen, False)
     audio = None
     gc.collect()
 
