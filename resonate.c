@@ -27,13 +27,12 @@
 
 static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
 {
-  static char *kwlist[] = {"signal", "sr", "freqs", "spring_constant", "damping",
+  static char *kwlist[] = {"signal", "sr", "freqs", "damping",
                            "rms_window", "return_resons", NULL};
 
   PyObject *pysignal;
   int sr;
   PyObject *pyfreqs;
-  double spring_constant;
   double damping;
   int rms_window;
   int return_resons;
@@ -42,7 +41,6 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
   int nfreqs;
   int siglen;
   PyObject *signal;
-  double *masses;
   PyObject **resons;
   PyObject *resons_list;
   double twopisquared;
@@ -51,7 +49,7 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
   double *pos, *prev_pos, *vel, *prev_vel;
   double normpos;
   double *norm;
-  double *sm, *dm;
+  double *freq2_sr;
   int i, t;
   double max_rms;
   double *rms_moving;
@@ -59,8 +57,8 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
   PyObject *rms_list;
   double rms_val;
 
-  if(!PyArg_ParseTupleAndKeywords(args, keywds, "OiOddi|i", kwlist,
-                                  &pysignal, &sr, &pyfreqs, &spring_constant, &damping,
+  if(!PyArg_ParseTupleAndKeywords(args, keywds, "OiOdi|i", kwlist,
+                                  &pysignal, &sr, &pyfreqs, &damping,
                                   &rms_window, &return_resons)) {
     return NULL;
   }
@@ -74,18 +72,13 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
   freqs = alloca(nfreqs * sizeof(double));
 
   twopisquared = pow(2.0 * M_PI, 2.0);
-  spring_constant = spring_constant * twopisquared;
-  masses = alloca(nfreqs * sizeof(double));
+  freq2_sr = alloca(nfreqs * sizeof(double));
 
   if(return_resons)
     resons = alloca(nfreqs * sizeof(PyObject *));
 
   signal = PySequence_Fast(pysignal, "expected sequence");
   siglen = PySequence_Size(signal);
-
-  // optimisation
-  sm = alloca(nfreqs * sizeof(double));
-  dm = alloca(nfreqs * sizeof(double));
 
   pos = alloca(nfreqs * sizeof(double));
   prev_pos = alloca(nfreqs * sizeof(double));
@@ -106,13 +99,10 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
     freqs[i] = PyFloat_AsDouble(item);
     Py_DECREF(item);
 
-    masses[i] = spring_constant / (pow(freqs[i], 2.0) * twopisquared);
-
     if(return_resons)
       resons[i] = PyList_New(siglen);
 
-    sm[i] = -(spring_constant / masses[i]);
-    dm[i] = (damping / masses[i]);
+    freq2_sr[i] = pow(freqs[i], 2) / (double)sr;
 
     pos[i] = 0;
     vel[i] = 0;
@@ -126,6 +116,7 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
 
   max_rms = 0;
   dt = 1.0 / (double)sr;
+
   for(t = 0; t < siglen; t ++) {
     item = PySequence_Fast_GET_ITEM(signal, t);
     sample = PyFloat_AsDouble(item);
@@ -133,21 +124,21 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
     for(i = 0; i < nfreqs; i ++) {
       prev_pos[i] = pos[i];
       prev_vel[i] = vel[i];
-      pos[i] = (prev_pos[i] + dt * prev_vel[i]);;
+      pos[i] = prev_pos[i] + dt * prev_vel[i];
       normpos = pos[i] * norm[i];
-      vel[i] = sample + prev_vel[i] + dt * (sm[i] * prev_pos[i] - dm[i] * prev_vel[i]);
+      vel[i] = sample + prev_vel[i] - freq2_sr[i] * (twopisquared * prev_pos[i] + damping * prev_vel[i]);
 
       if(return_resons) {
         item = PyFloat_FromDouble(normpos);
         PyList_SET_ITEM(resons[i], t, item);
       }
 
-      rms_moving[i] += fabs(normpos);
+      rms_moving[i] += pow(normpos, 2.0);
     }
 
     if((t + 1) % rms_window == 0) {
       for(i = 0; i < nfreqs; i ++) {
-        rms_val = rms_moving[i] / (double)rms_window;
+        rms_val = sqrt(rms_moving[i] / (double)rms_window);
         rms_moving[i] = 0;
         item = PyFloat_FromDouble(rms_val);
         PyList_SET_ITEM(rms[i], t / rms_window, item);

@@ -8,16 +8,16 @@ and the overall peak RMS amplitude.
 Example usage:
 
     from resonate import resonate
-    rms, max_rms = resonate(audio, sample_rate, freqs, damping, spring_constant, rms_window_width)
+    rms, max_rms = resonate(audio, sample_rate, freqs, damping, rms_window_width)
 
 `audio` and `freq` can be standard Python lists, or NumPy arrays.
 `audio` needs to be a single (mono) signal.
-`damping` should probably be somewhere around _8000.0_, `spring_constant` probably around _20.0_.
+`damping` should probably be somewhere around _0.002_.
 `rms_window_width` is specified in number of samples.
 
 If you want the resonated_signals back, pass True as a final argument:
 
-    resonated_signals, rms, max_rms = resonate(audio, sample_rate, freqs, damping, spring_constant, rms_window_width, True)
+    resonated_signals, rms, max_rms = resonate(audio, sample_rate, freqs, damping, rms_window_width, True)
 
 Doing this will take lots of memory.
 

@@ -6,15 +6,16 @@ from resonate import resonate
 
 def plot_resonators():
 
-    c3 = 130.8128
-    npitches = 28
-    freqs = c3 * np.power(2, np.arange(npitches) / 12.0)
+    c2 = 65.4064 * 4
+    npitches = 22
+    freqs = c2 * np.power(2, np.arange(npitches) / 12.0)
 
-    sr, audio = wavfile.read('carly.wav')
+    sr, audio = wavfile.read('bwv1080_5_midi.wav')
     audio = audio / float(max(audio))
+    audio = audio[0 : 30 * 22050]
 
     print 'starting resonating'
-    rms, max_rms = resonate(audio, sr, freqs, 10000.0, 20.0, 2000, False)
+    rms, max_rms = resonate(audio, sr, freqs, .002, 1000, False)
     print 'done resonating'
 
     note_names = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B']
@@ -33,7 +34,7 @@ def plot_resonators():
         ax.get_yaxis().set_label_text(note_names[(len(rms) - i - 1) % 12])
         ax.get_yaxis().set_ticks([])
         ax.set_ylim(0, max_rms)
-        ax.fill_between(x, 0, resonator)
+        ax.fill_between(x, 0, resonator, color = 'black')
     plt.show()
 
 if __name__ == '__main__':
