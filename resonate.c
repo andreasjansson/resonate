@@ -87,7 +87,7 @@ static PyObject *resonate(PyObject *self, PyObject *args, PyObject *keywds)
   norm = alloca(nfreqs * sizeof(double));
 
   rms_moving = alloca(nfreqs * sizeof(double));
-  rms = alloca(nfreqs * sizeof(double));
+  rms = alloca(nfreqs * sizeof(PyObject *));
 
   for(i = 0; i < nfreqs; i ++) {
     item = PySequence_GetItem(pyfreqs, i);
