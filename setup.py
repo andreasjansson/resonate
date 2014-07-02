@@ -1,12 +1,10 @@
-from distutils.core import setup, Extension
+from setuptools import setup, Extension
 
+# run the setup
 setup(
-    name="resonate",
-    ext_modules = [Extension("resonate", ["resonate.c"])],
-    author = 'Andreas Jansson',
-    author_email = 'andreas@jansson.me.uk',
-    description = ('Python module for running a signal through an array of tuned resonators'),
-    license = 'GPL v3',
-    keywords = 'music audio dsp pitch',
-    
-    )
+    name='resonate',
+    ext_modules=[
+        Extension('resonate._resonate',
+                  sources=['src/resonate.c']),
+    ],
+)
