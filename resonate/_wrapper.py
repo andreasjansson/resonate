@@ -52,7 +52,7 @@ def resonate(signal, sr, freqs, damping, rms_window, return_response=False):
     out = _resonate.resonate(signal, sr, freqs, damping, rms_window, return_response)
 
     if return_numpy:
-        if type(out) == 'tuple':
+        if type(out) == tuple:
             rms, response = out
             return np.array(rms), np.array(response)
         else:
